@@ -1,0 +1,38 @@
+// app global css in SCSS form
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Triangles&display=swap');
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: $dark;
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Rubik Doodle Triangles', serif;
+        color: $primary;
+    }
+    
+    .firmen-identitaet {
+        font-family: 'Rubik Doodle Triangles', serif;
+        color: $secondary;
+    }
+    
+    p {
+        margin: 0px;
+    }
+    
+    a {
+        color: $secondary;
+        text-decoration: none;
+        &:hover {
+            color: $primary;
+            text-decoration: underline;
+            text-shadow: none;
+        }
+        &:visited {
+            color: $accent;
+        }
+    }
+}
+
+
