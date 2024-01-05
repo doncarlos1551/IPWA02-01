@@ -1,10 +1,13 @@
 package model;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import java.util.Date;
 
 @Entity
 public class EmissionsDaten {
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -12,7 +15,12 @@ public class EmissionsDaten {
     @JoinColumn(name = "land_id", nullable = false)
     private Land land;
 
+    @NotNull
+    @Temporal(TemporalType.DATE)
+    @PastOrPresent
     private Date jahr;
+
+    @NotNull
     private Double co2Emissionen;
 
     public EmissionsDaten() {

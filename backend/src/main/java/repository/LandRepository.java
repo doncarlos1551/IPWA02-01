@@ -30,4 +30,3 @@ public class LandRepository {
         entityManager.remove(entityManager.contains(land) ? land : entityManager.merge(land));
     }
 }
-

@@ -20,11 +20,26 @@ public class LandService {
         return landRepository.findAll();
     }
 
-    public void saveLand(Land land) {
+    public void createLand(Land land) {
         landRepository.save(land);
     }
 
-    public void deleteLand(Land land) {
-        landRepository.delete(land);
+    public Land updateLand(Long id, Land updatedLand) {
+        Land existingLand = getLand(id);
+        if (existingLand != null) {
+            existingLand.setName(updatedLand.getName());
+            landRepository.save(existingLand);
+            return existingLand;
+        }
+        return null;
+    }
+
+    public boolean deleteLand(Long id) {
+        Land land = getLand(id);
+        if (land != null) {
+            landRepository.delete(land);
+            return true;
+        }
+        return false;
     }
 }

@@ -20,11 +20,26 @@ public class BenutzerService {
         return benutzerRepository.findAll();
     }
 
-    public void saveBenutzer(Benutzer benutzer) {
+    public void createBenutzer(Benutzer benutzer) {
         benutzerRepository.save(benutzer);
     }
 
-    public void deleteBenutzer(Benutzer benutzer) {
-        benutzerRepository.delete(benutzer);
+    public Benutzer updateBenutzer(Long id, Benutzer updatedBenutzer) {
+        Benutzer existingBenutzer = getBenutzer(id);
+        if (existingBenutzer != null) {
+            existingBenutzer.setBenutzername(updatedBenutzer.getBenutzername());
+            benutzerRepository.save(existingBenutzer);
+            return existingBenutzer;
+        }
+        return null;
+    }
+
+    public boolean deleteBenutzer(Long id) {
+        Benutzer benutzer = getBenutzer(id);
+        if (benutzer != null) {
+            benutzerRepository.delete(benutzer);
+            return true;
+        }
+        return false;
     }
 }

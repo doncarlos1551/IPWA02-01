@@ -7,6 +7,23 @@
   <name>HeroToZeroBackend</name>
   <description>Backend</description>
   <dependencies>
+	 <dependency>
+    	<groupId>org.hibernate</groupId>
+    	<artifactId>hibernate-core</artifactId>
+    	<version>6.4.1.Final</version>
+	</dependency>
+	<dependency>
+    	<groupId>org.jboss.resteasy</groupId>
+    	<artifactId>resteasy-jaxrs</artifactId>
+    	<version>3.15.6.Final</version>
+    	<scope>provided</scope>
+	</dependency>
+	<dependency>
+    	<groupId>org.eclipse.microprofile.jwt</groupId>
+    	<artifactId>microprofile-jwt-auth-api</artifactId>
+    	<version>2.1</version>
+    	<scope>provided</scope>
+	</dependency>
 	<dependency>
     	<groupId>org.connectbot</groupId>
     	<artifactId>jbcrypt</artifactId>
