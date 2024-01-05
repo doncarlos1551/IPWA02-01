@@ -13,6 +13,18 @@ public class BenutzerRepository {
     public Benutzer findById(Long id) {
         return entityManager.find(Benutzer.class, id);
     }
+    
+    public Benutzer findByBenutzername(String benutzername) {
+        try {
+            return entityManager.createQuery("SELECT b FROM Benutzer b WHERE b.benutzername = :benutzername", Benutzer.class)
+                                .setParameter("benutzername", benutzername)
+                                .getSingleResult();
+        } catch (Exception e) {
+            // Erstmal keine besondere Behandlung des Fehlers!!!
+            return null;
+        }
+    }
+
 
     public List<Benutzer> findAll() {
         return entityManager.createQuery("SELECT b FROM Benutzer b", Benutzer.class).getResultList();

@@ -15,6 +15,10 @@ public class BenutzerService {
     public Benutzer getBenutzer(Long id) {
         return benutzerRepository.findById(id);
     }
+    
+    public Benutzer getBenutzer(String name) {
+        return benutzerRepository.findByBenutzername(name);
+    }
 
     public List<Benutzer> getAllBenutzer() {
         return benutzerRepository.findAll();
@@ -41,5 +45,10 @@ public class BenutzerService {
             return true;
         }
         return false;
+    }
+
+    public boolean isBenutzernameVerfügbar(String benutzername) {
+        Benutzer existierenderBenutzer = benutzerRepository.findByBenutzername(benutzername);
+        return existierenderBenutzer == null;
     }
 }

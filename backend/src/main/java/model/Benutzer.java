@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -58,5 +60,12 @@ public class Benutzer {
 
     public void setPasswort(String passwort) {
         this.passwort = passwort;
+    }
+    
+    public List<String> getRollen() {
+    	if(benutzername.equals("Admin")) {
+    		return List.of("User", "Admin");
+    	}
+        return List.of("User");
     }
 }

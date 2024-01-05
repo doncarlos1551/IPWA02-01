@@ -39,6 +39,9 @@ public class BenutzerResource {
     @POST
     @RolesAllowed({"Admin", "User"})
     public Response createBenutzer(Benutzer benutzer) {
+        if (!benutzerService.isBenutzernameVerfügbar(benutzer.getBenutzername())) {
+            return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
+        }
         benutzerService.createBenutzer(benutzer);
         return Response.status(Response.Status.CREATED).entity(benutzer).build();
     }
@@ -47,6 +50,9 @@ public class BenutzerResource {
     @Path("/{id}")
     @RolesAllowed({"Admin", "User"})
     public Response updateBenutzer(@PathParam("id") Long id, Benutzer updatedBenutzer) {
+        if (!benutzerService.isBenutzernameVerfügbar(updatedBenutzer.getBenutzername())) {
+            return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
+        }
         Benutzer benutzer = benutzerService.updateBenutzer(id, updatedBenutzer);
         if (benutzer != null) {
             return Response.ok(benutzer).build();
