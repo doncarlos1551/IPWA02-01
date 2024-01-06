@@ -4,7 +4,11 @@ import model.EmissionsDaten;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import jakarta.ejb.Stateless;
+//import jakarta.enterprise.context.ApplicationScoped;
 
+@Stateless
+//@ApplicationScoped
 public class EmissionsDatenRepository {
 
     @PersistenceContext

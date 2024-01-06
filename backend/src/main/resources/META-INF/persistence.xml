@@ -10,10 +10,12 @@
         <class>model.Benutzer</class>
         <class>model.Land</class>
         <class>model.EmissionsDaten</class>
-        
+        <class>model.Konfiguration</class>
+
         <properties>
             <!-- Aktualisiere das Schema basierend auf den Entity-Klassen -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <!-- <property name="jakarta.persistence.schema-generation.database.action" value="update"/> -->
 
             <!-- Optional: Zeige SQL-Statements in der Konsole an -->
             <property name="hibernate.show_sql" value="true"/>

@@ -2,6 +2,7 @@ package herotozero.api;
 
 import model.Benutzer;
 import service.BenutzerService;
+import util.KeyVerwaltung;
 import util.PasswortVerschluesselung;
 
 import jakarta.annotation.PostConstruct;
@@ -15,6 +16,9 @@ public class InitBean {
 
     @Inject
     private BenutzerService benutzerService;
+    
+    @Inject
+    private KeyVerwaltung keyVerwaltung;
 
     @PostConstruct
     public void init() {
@@ -23,6 +27,10 @@ public class InitBean {
             admin.setBenutzername("Admin");
             admin.setPasswort(PasswortVerschluesselung.hashPasswort("HeroToAdmin"));
             benutzerService.createBenutzer(admin);
+        }
+        
+        if (keyVerwaltung.holeOderErstelleSchluessel() == null) {
+            keyVerwaltung.generiereUndSpeichereNeuenSchluessel();
         }
     }
 }
