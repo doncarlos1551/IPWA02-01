@@ -1,6 +1,7 @@
-package security;
+package resource;
 
 import model.Benutzer;
+import service.AuthService;
 import service.BenutzerService;
 import util.PasswortVerschluesselung;
 import jakarta.ws.rs.POST;

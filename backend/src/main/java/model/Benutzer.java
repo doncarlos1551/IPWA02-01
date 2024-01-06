@@ -26,7 +26,10 @@ public class Benutzer {
     @NotBlank(message = "Passwort darf nicht leer sein")
     private String passwort; // Verschlüsselung später beachten!!!
 
-    public Benutzer() {
+    public Benutzer(String benutzername, String email, String passwort) {
+        this.benutzername = benutzername;
+        this.email = email;
+        this.passwort = passwort;
     }
 
     // Getter und Setter

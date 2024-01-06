@@ -23,9 +23,7 @@ public class InitBean {
     @PostConstruct
     public void init() {
         if (benutzerService.getBenutzer("Admin") == null) {
-            Benutzer admin = new Benutzer();
-            admin.setBenutzername("Admin");
-            admin.setPasswort(PasswortVerschluesselung.hashPasswort("HeroToAdmin"));
+            Benutzer admin = new Benutzer("Admin", "admin@example.com", PasswortVerschluesselung.hashPasswort("HeroToAdmin"));
             benutzerService.createBenutzer(admin);
         }
         

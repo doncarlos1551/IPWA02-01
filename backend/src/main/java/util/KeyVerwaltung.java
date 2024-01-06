@@ -28,8 +28,8 @@ public class KeyVerwaltung {
 
     private String findeSchluesselInDatenbank() {
         TypedQuery<Konfiguration> query = entityManager.createQuery(
-            "SELECT k FROM Konfiguration k WHERE k.key = :key", Konfiguration.class);
-        query.setParameter("key", SCHLUESSEL_ID);
+            "SELECT k FROM Konfiguration k WHERE k.secretKey = :secretKey", Konfiguration.class);
+        query.setParameter("secretKey", SCHLUESSEL_ID);
 
         List<Konfiguration> ergebnis = query.getResultList();
         if (!ergebnis.isEmpty()) {

@@ -1,4 +1,4 @@
-package security;
+package service;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
