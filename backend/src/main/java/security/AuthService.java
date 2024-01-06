@@ -3,6 +3,7 @@ package security;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import model.Benutzer;
+import util.KeyVerwaltung;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,38 +11,43 @@ import javax.crypto.SecretKey;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+import io.jsonwebtoken.io.Decoders;
 
 @RequestScoped
 public class AuthService {
 
+//    @Inject
+//    private JsonWebToken jwt;
+
     @Inject
-    private JsonWebToken jwt;
+    private KeyVerwaltung keyVerwaltung;
 
-    public boolean isUserInRole(String role) {
-        return jwt.getGroups().contains(role);
-    }
-
-    public String getCurrentUserName() {
-        return jwt.getName();
-    }
-
-    public Set<String> getCurrentUserRoles() {
-        return new HashSet<>(jwt.getGroups());
-    }
+//    public boolean isBenutzerInRolle(String rolle) {
+//        return jwt.getGroups().contains(rolle);
+//    }
+//
+//    public String getAktuellenBenutzernamen() {
+//        return jwt.getName();
+//    }
+//
+//    public Set<String> getAktuelleBenutzerrollen() {
+//        return new HashSet<>(jwt.getGroups());
+//    }
 
     public String createToken(Benutzer benutzer) {
-        long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
-        long expMillis = nowMillis + 3600000; // umgerechnet 1h
-        Date exp = new Date(expMillis);
+        long jetztMillis = System.currentTimeMillis();
+        Date jetzt = new Date(jetztMillis);
+        long ablaufMillis = jetztMillis + 3600000; // Umgerechnet 1 Stunde
+        Date ablauf = new Date(ablaufMillis);
 
-//        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
-        SecretKey key = Keys.hmacShaKeyFor("SecretKey".getBytes()); // Übergangsweise zum Testen, später auswechseln!!!
+        String kodierterSchluessel = keyVerwaltung.holeOderErstelleSchluessel();
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(kodierterSchluessel));
+
         return Jwts.builder()
                 .subject(benutzer.getBenutzername())
                 .claim("groups", benutzer.getRollen())
-                .issuedAt(now)
-                .expiration(exp)
+                .issuedAt(jetzt)
+                .expiration(ablauf)
                 .signWith(key)
                 .compact();
     }
