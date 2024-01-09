@@ -7,10 +7,13 @@ import util.KeyVerwaltung;
 //import org.eclipse.microprofile.jwt.JsonWebToken;
 //import java.util.HashSet;
 //import java.util.Set;
-import javax.crypto.SecretKey;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import io.jsonwebtoken.io.Decoders;
 
 @RequestScoped
