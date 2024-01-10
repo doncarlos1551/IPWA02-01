@@ -23,6 +23,7 @@ public class EmissionsDaten {
     @NotNull
     private Double co2Emissionen;
 
+    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public EmissionsDaten() {
     }
 

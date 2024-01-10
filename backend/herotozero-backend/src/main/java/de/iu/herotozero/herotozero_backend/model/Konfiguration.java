@@ -9,6 +9,7 @@ public class Konfiguration {
     @Id
     private String secretKey;
 
+    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public Konfiguration() {
     }
 

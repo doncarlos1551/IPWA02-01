@@ -17,6 +17,7 @@ public class Land {
 
     // Apäter noch mindestens Gesamt-CO2!!!
 
+    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public Land() {
     }
 

@@ -127,6 +127,11 @@
 				<artifactId>jjwt-api</artifactId>
 				<version>0.12.3</version>
 			</dependency>
+			<dependency>
+			    <groupId>io.jsonwebtoken</groupId>
+			    <artifactId>jjwt-jackson</artifactId>
+			    <version>0.12.3</version>
+			</dependency>
         <!-- Import the CDI API, we use provided scope as the API is included in WildFly / JBoss EAP -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
