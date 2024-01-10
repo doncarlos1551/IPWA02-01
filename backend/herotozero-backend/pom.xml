@@ -111,7 +111,22 @@
     </dependencyManagement>
 
     <dependencies>
-
+		<!-- custom imports -->
+		<dependency>
+		    	<groupId>org.connectbot</groupId>
+		    	<artifactId>jbcrypt</artifactId>
+		    	<version>1.0.2</version>
+			</dependency>
+			<dependency>
+			    <groupId>io.jsonwebtoken</groupId>
+			    <artifactId>jjwt-impl</artifactId>
+			    <version>0.12.3</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-api</artifactId>
+				<version>0.12.3</version>
+			</dependency>
         <!-- Import the CDI API, we use provided scope as the API is included in WildFly / JBoss EAP -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
