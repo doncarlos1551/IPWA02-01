@@ -8,24 +8,15 @@ public class Konfiguration {
 
     @Id
     private String secretKey;
-    private String secretValue;
 
     public Konfiguration() {
     }
 
-    public String getKey() {
+    public String getSecretKey() {
         return secretKey;
     }
 
-    public void setKey(String key) {
-        this.secretKey = key;
-    }
-
-    public String getValue() {
-        return secretValue;
-    }
-
-    public void setValue(String value) {
-        this.secretValue = value;
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 }
