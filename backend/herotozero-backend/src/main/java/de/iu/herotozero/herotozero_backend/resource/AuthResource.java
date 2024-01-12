@@ -47,10 +47,12 @@ public class AuthResource {
 
     @POST
     @Path("/register")
-    public Response register(Benutzer newUser) {
-        if (benutzerService.isBenutzernameVerfügbar(newUser.getBenutzername())) {
-            newUser.setPasswort(PasswortVerschluesselung.hashPasswort(newUser.getPasswort()));
-            benutzerService.createBenutzer(newUser);
+    @Produces(MediaType.APPLICATION_JSON)
+    // Hier müsste eigentlich ein zusätzliches Maß Sicherheit für die Registrierung vorgenommen werden, es könnte zum Beispiel Bestätigung durch einen Administrator eingeführt werden oder Bestätigungs-Email, in diesem Fall beides zu viel Aufwand
+    public Response register(Benutzer neuerBenutzer) {
+        if (benutzerService.isBenutzernameVerfügbar(neuerBenutzer.getBenutzername())) {
+        	neuerBenutzer.setPasswort(PasswortVerschluesselung.hashPasswort(neuerBenutzer.getPasswort()));
+            benutzerService.createBenutzer(neuerBenutzer);
             return Response.status(Response.Status.CREATED).build();
         }
         return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben").build();
