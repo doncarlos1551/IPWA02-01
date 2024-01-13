@@ -14,10 +14,8 @@ public class EmissionsDaten {
 	@Column(name = "land_id", nullable = false)
 	private Long landId;
 
-    @NotNull
-    @Temporal(TemporalType.DATE)
-    @PastOrPresent
-    private Date jahr;
+	@NotNull
+    private Integer jahr;
 
     @NotNull
     private Double co2Emissionen;
@@ -43,11 +41,11 @@ public class EmissionsDaten {
         this.landId = landId;
     }
 
-    public Date getJahr() {
+    public Integer getJahr() {
         return jahr;
     }
 
-    public void setJahr(Date jahr) {
+    public void setJahr(Integer jahr) {
         this.jahr = jahr;
     }
 
