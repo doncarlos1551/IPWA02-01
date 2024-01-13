@@ -11,9 +11,8 @@ public class EmissionsDaten {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "land_id", nullable = false)
-    private Land land;
+	@Column(name = "land_id", nullable = false)
+	private Long landId;
 
     @NotNull
     @Temporal(TemporalType.DATE)
@@ -36,12 +35,12 @@ public class EmissionsDaten {
         this.id = id;
     }
 
-    public Land getLand() {
-        return land;
+    public Long getLandId() {
+        return landId;
     }
 
-    public void setLand(Land land) {
-        this.land = land;
+    public void setLandId(Long landId) {
+        this.landId = landId;
     }
 
     public Date getJahr() {

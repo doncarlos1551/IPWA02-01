@@ -27,17 +27,17 @@ public class EmissionsDatenService {
 
     public void saveEmissionsDaten(EmissionsDaten emissionsDaten) {
         emissionsDatenRepository.save(emissionsDaten);
-        updateGesamtEmissionen(emissionsDaten.getLand());
+        updateGesamtEmissionen(emissionsDaten.getLandId());
     }
 
     public EmissionsDaten updateEmissionsDaten(Long id, EmissionsDaten updatedEmissionsDaten) {
         EmissionsDaten existingEmissionsDaten = getEmissionsDaten(id);
         if (existingEmissionsDaten != null) {
-            existingEmissionsDaten.setLand(updatedEmissionsDaten.getLand());
+            existingEmissionsDaten.setLandId(updatedEmissionsDaten.getLandId());
             existingEmissionsDaten.setJahr(updatedEmissionsDaten.getJahr());
             existingEmissionsDaten.setCo2Emissionen(updatedEmissionsDaten.getCo2Emissionen());
             emissionsDatenRepository.save(existingEmissionsDaten);
-            updateGesamtEmissionen(existingEmissionsDaten.getLand());
+            updateGesamtEmissionen(existingEmissionsDaten.getLandId());
             return existingEmissionsDaten;
         }
         return null;
@@ -46,16 +46,23 @@ public class EmissionsDatenService {
     public boolean deleteEmissionsDaten(Long id) {
         EmissionsDaten emissionsDaten = getEmissionsDaten(id);
         if (emissionsDaten != null) {
+            Long landId = emissionsDaten.getLandId();
             emissionsDatenRepository.delete(emissionsDaten);
-            updateGesamtEmissionen(emissionsDaten.getLand());
+            updateGesamtEmissionen(landId);
             return true;
         }
         return false;
     }
     
-    public void updateGesamtEmissionen(Land land) {
-        Double gesamtEmissionen = emissionsDatenRepository.berechneGesamtEmissionen(land);
-        land.setGesamtCo2Emissionen(gesamtEmissionen);
-        landRepository.save(land);
+    public void updateGesamtEmissionen(Long landId) {
+        Land land = landRepository.findById(landId);
+        if (land != null) {
+            Double gesamtEmissionen = emissionsDatenRepository.berechneGesamtEmissionen(landId);
+            if (gesamtEmissionen == null) {
+                gesamtEmissionen = 0.0;
+            }
+            land.setGesamtCo2Emissionen(gesamtEmissionen);
+            landRepository.save(land);
+        }
     }
 }

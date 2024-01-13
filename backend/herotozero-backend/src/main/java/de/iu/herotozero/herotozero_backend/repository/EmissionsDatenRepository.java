@@ -1,7 +1,6 @@
 package de.iu.herotozero.herotozero_backend.repository;
 
 import de.iu.herotozero.herotozero_backend.model.EmissionsDaten;
-import de.iu.herotozero.herotozero_backend.model.Land;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -35,10 +34,10 @@ public class EmissionsDatenRepository {
         entityManager.remove(entityManager.contains(emissionsDaten) ? emissionsDaten : entityManager.merge(emissionsDaten));
     }
     
-    public Double berechneGesamtEmissionen(Land land) {
+    public Double berechneGesamtEmissionen(Long landId) {
         return entityManager.createQuery(
-                "SELECT SUM(e.co2Emissionen) FROM EmissionsDaten e WHERE e.land = :land", Double.class)
-            .setParameter("land", land)
+                "SELECT SUM(e.co2Emissionen) FROM EmissionsDaten e WHERE e.landId = :landId", Double.class)
+            .setParameter("landId", landId)
             .getSingleResult();
     }
 

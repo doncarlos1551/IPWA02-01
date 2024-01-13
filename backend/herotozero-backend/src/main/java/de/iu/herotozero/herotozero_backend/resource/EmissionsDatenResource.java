@@ -68,7 +68,7 @@ public class EmissionsDatenResource {
     @RolesAllowed("Admin")
     public Response deleteEmissionsDaten(@PathParam("id") Long id) {
         if (emissionsDatenService.deleteEmissionsDaten(id)) {
-            return Response.noContent().build();
+            return Response.status(Response.Status.OK).entity("Emissionsdaten wurden gelöscht.").build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
