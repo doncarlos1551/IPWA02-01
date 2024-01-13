@@ -25,8 +25,8 @@
          data source, this configuration uses the JakartaEE default data source is just for development and testing! -->
       <jta-data-source>java:/heroToZero</jta-data-source>
       <properties>
-         <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
-            <!-- <property name="jakarta.persistence.schema-generation.database.action" value="update"/> -->
+         <!-- <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/> -->
+         <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
 
             <property name="hibernate.show_sql" value="true"/>
       </properties>

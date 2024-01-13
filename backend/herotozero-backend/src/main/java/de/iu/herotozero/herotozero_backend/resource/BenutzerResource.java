@@ -9,12 +9,22 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.logging.Logger;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/benutzer")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Stateless
+@RolesAllowed({"Admin"})
 public class BenutzerResource {
+	
+	@SuppressWarnings("unused")
+	private static final Logger LOGGER = Logger.getLogger(AuthResource.class.getName());
+	
+	@Inject
+	JsonWebToken jwt;
 
     @Inject
     private BenutzerService benutzerService;
@@ -32,12 +42,11 @@ public class BenutzerResource {
         if (benutzer != null) {
             return Response.ok(benutzer).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Holen wurde nicht gefunden.").build();
         }
     }
 
     @POST
-    @RolesAllowed({"Admin", "User"})
     public Response createBenutzer(Benutzer benutzer) {
         if (!benutzerService.isBenutzernameVerfügbar(benutzer.getBenutzername())) {
             return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
@@ -48,7 +57,6 @@ public class BenutzerResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({"Admin", "User"})
     public Response updateBenutzer(@PathParam("id") Long id, Benutzer updatedBenutzer) {
         if (!benutzerService.isBenutzernameVerfügbar(updatedBenutzer.getBenutzername())) {
             return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
@@ -57,18 +65,17 @@ public class BenutzerResource {
         if (benutzer != null) {
             return Response.ok(benutzer).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Updaten wurde nicht gefunden.").build();
         }
     }
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("Admin")
     public Response deleteBenutzer(@PathParam("id") Long id) {
         if (benutzerService.deleteBenutzer(id)) {
-            return Response.noContent().build();
+        	return Response.status(Response.Status.OK).entity("Benutzer wurde gelöscht.").build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Löschen wurde nicht gefunden.").build();
         }
     }
 }

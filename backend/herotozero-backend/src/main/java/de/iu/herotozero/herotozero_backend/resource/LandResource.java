@@ -7,8 +7,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/laender")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,10 +19,14 @@ import java.util.List;
 @Stateless
 public class LandResource {
 
+	@Inject
+	JsonWebToken jwt;
+	
     @Inject
     private LandService landService;
 
     @GET
+    @PermitAll
     public Response getAllLaender() {
         List<Land> laender = landService.getAllLaender();
         return Response.ok(laender).build();
@@ -27,6 +34,7 @@ public class LandResource {
 
     @GET
     @Path("/{id}")
+    @PermitAll
     public Response getLandById(@PathParam("id") Long id) {
         Land land = landService.getLand(id);
         if (land != null) {

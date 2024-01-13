@@ -10,6 +10,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.annotation.security.PermitAll;
+//import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import java.util.logging.Logger;
 
@@ -61,7 +62,7 @@ public class AuthResource {
         if (benutzerService.isBenutzernameVerfügbar(neuerBenutzer.getBenutzername())) {
         	neuerBenutzer.setPasswort(PasswortVerschluesselung.hashPasswort(neuerBenutzer.getPasswort()));
             benutzerService.createBenutzer(neuerBenutzer);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).entity("Benutzer wurde erstellt").build();
         }
         return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben").build();
     }

@@ -5,11 +5,9 @@ import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.auth.LoginConfig;
 
 @ApplicationPath("/api")
-@LoginConfig(authMethod="MP-JWT", realmName="JwtRealm")
+@LoginConfig(authMethod="MP-JWT", realmName="ApplicationDomain")
 public class RestApplication extends Application {
-    // Bleibt leer, da kein weiterer Code nötig!
-	// Logger ist temporär zum testen eingebunden
-
     public RestApplication() {
+    	// Bleibt leer, da kein weiterer Code nötig!
     }
 }

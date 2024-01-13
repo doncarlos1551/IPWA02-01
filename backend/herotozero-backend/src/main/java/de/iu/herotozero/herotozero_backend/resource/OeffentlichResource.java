@@ -1,6 +1,10 @@
 package de.iu.herotozero.herotozero_backend.resource;
 
 import java.util.logging.Logger;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -13,7 +17,7 @@ import java.util.Base64;
 @Path("/public")
 public class OeffentlichResource {
     private static final Logger logger = Logger.getLogger(OeffentlichResource.class.getName());
-
+    
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getOeffentlicheDaten() {

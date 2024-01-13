@@ -7,8 +7,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/emissionsdaten")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,10 +19,14 @@ import java.util.List;
 @Stateless
 public class EmissionsDatenResource {
 
+	@Inject
+	JsonWebToken jwt;
+	
     @Inject
     private EmissionsDatenService emissionsDatenService;
 
     @GET
+    @PermitAll
     public Response getAllEmissionsDaten() {
         List<EmissionsDaten> emissionsDaten = emissionsDatenService.getAllEmissionsDaten();
         return Response.ok(emissionsDaten).build();
@@ -27,6 +34,7 @@ public class EmissionsDatenResource {
 
     @GET
     @Path("/{id}")
+    @PermitAll
     public Response getEmissionsDatenById(@PathParam("id") Long id) {
         EmissionsDaten emissionsDaten = emissionsDatenService.getEmissionsDaten(id);
         if (emissionsDaten != null) {

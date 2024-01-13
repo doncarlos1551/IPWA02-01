@@ -2,13 +2,17 @@ package de.iu.herotozero.herotozero_backend.service;
 
 import de.iu.herotozero.herotozero_backend.model.Benutzer;
 import de.iu.herotozero.herotozero_backend.repository.BenutzerRepository;
+import de.iu.herotozero.herotozero_backend.resource.AuthResource;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Stateless
 public class BenutzerService {
 
+	private static final Logger LOGGER = Logger.getLogger(AuthResource.class.getName());
+	
     @Inject
     private BenutzerRepository benutzerRepository;
 
@@ -29,6 +33,10 @@ public class BenutzerService {
     }
 
     public Benutzer updateBenutzer(Long id, Benutzer updatedBenutzer) {
+    	if (id == 1) {
+            LOGGER.warning("Admin-Account aktualisieren wurde abgelehnt.");
+            return null;
+        }
         Benutzer existingBenutzer = getBenutzer(id);
         if (existingBenutzer != null) {
             existingBenutzer.setBenutzername(updatedBenutzer.getBenutzername());
@@ -38,9 +46,14 @@ public class BenutzerService {
         return null;
     }
 
-    public boolean deleteBenutzer(Long id) {
+	public boolean deleteBenutzer(Long id) {
+    	if (id == 1) {
+            LOGGER.warning("Admin-Account aktualisieren wurde abgelehnt.");
+            return false;
+    	}
         Benutzer benutzer = getBenutzer(id);
         if (benutzer != null) {
+        	LOGGER.info("deleteBenutzer: " + benutzer.getBenutzername());
             benutzerRepository.delete(benutzer);
             return true;
         }
