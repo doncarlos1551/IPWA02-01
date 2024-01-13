@@ -9,6 +9,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ public class AuthResource {
     private AuthService authService;
 
     @POST
+    @PermitAll
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(BenutzerCredentials credentials) {
@@ -37,8 +39,14 @@ public class AuthResource {
         if (PasswortVerschluesselung.checkPasswort(credentials.getPasswort(), benutzer.getPasswort())) {
         	// Passwort passt
             LOGGER.info("Benutzer gefunden: " + benutzer.getBenutzername());
-            String token = authService.createToken(benutzer);
-            return Response.ok(new TokenResponse(token)).build();
+            String token;
+			try {
+				token = authService.createToken(benutzer);
+				return Response.ok(new TokenResponse(token)).build();
+			} catch (Exception e) {
+				e.printStackTrace();
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Private Key konnte nicht geholt werden").build();
+			}
         } else {
             // Passwort passt nicht - später gleiche message wie nutzer existiert nicht - wegen sicherheit
             return Response.status(Response.Status.UNAUTHORIZED).entity("Benutzername oder Passwort ungültig - Passwort falsch").build();

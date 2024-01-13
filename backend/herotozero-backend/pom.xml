@@ -27,6 +27,7 @@
     <description>Insert description for your project here.</description>
 
     <properties>
+		<version.microprofile.bom>{versionMicroprofileBom}</version.microprofile.bom>
         <!-- Explicitly declaring the source encoding eliminates the following
             message: -->
         <!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered

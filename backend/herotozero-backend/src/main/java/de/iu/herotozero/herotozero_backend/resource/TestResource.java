@@ -1,5 +1,6 @@
 package de.iu.herotozero.herotozero_backend.resource;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -10,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 public class TestResource {
 
     @GET
+    @PermitAll
     @Produces(MediaType.TEXT_PLAIN)
     public String getTestNachricht() {
         return "Das ist ein erster Test";
