@@ -10,7 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/laender")

@@ -21,7 +21,6 @@ public class EmissionsDaten {
     @NotNull
     private Boolean validiert = false;
 
-    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public EmissionsDaten() {
     }
 

@@ -19,7 +19,6 @@ public class Land {
     @NotNull
     private Double gesamtCo2Emissionen = 0.0;
 
-    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public Land() {
     }
 

@@ -10,14 +10,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.annotation.security.PermitAll;
-//import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import java.util.logging.Logger;
 
 @Path("/auth")
 public class AuthResource {
-	
-	private static final Logger LOGGER = Logger.getLogger(AuthResource.class.getName());
 
     @Inject
     private BenutzerService benutzerService;
@@ -30,16 +26,13 @@ public class AuthResource {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(BenutzerCredentials credentials) {
-    	LOGGER.info("Login-Versuch für Benutzer: " + credentials.getBenutzername());
         Benutzer benutzer = benutzerService.getBenutzer(credentials.getBenutzername());
-//        LOGGER.info("Benutzer erstellt: " + benutzer.getBenutzername());
         if (benutzer == null) {
             // Kein Benutzer gefunden - später gleiche message wie passwort falsch - wegen sicherheit
             return Response.status(Response.Status.UNAUTHORIZED).entity("Benutzername oder Passwort ungültig - Benutzername falsch").build();
         }
         if (PasswortVerschluesselung.checkPasswort(credentials.getPasswort(), benutzer.getPasswort())) {
         	// Passwort passt
-            LOGGER.info("Benutzer gefunden: " + benutzer.getBenutzername());
             String token;
 			try {
 				token = authService.createToken(benutzer);

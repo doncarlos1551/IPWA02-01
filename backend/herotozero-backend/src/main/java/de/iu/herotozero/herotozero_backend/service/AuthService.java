@@ -3,9 +3,9 @@ package de.iu.herotozero.herotozero_backend.service;
 import de.iu.herotozero.herotozero_backend.model.Benutzer;
 import de.iu.herotozero.herotozero_backend.util.KeyVerwaltung;
 import jakarta.enterprise.context.RequestScoped;
-import io.jsonwebtoken.Jwts;
 import java.security.PrivateKey;
 import java.util.Date;
+import io.jsonwebtoken.Jwts;
 
 @RequestScoped
 public class AuthService {

@@ -1,7 +1,6 @@
 package de.iu.herotozero.herotozero_backend.resource;
 
 import de.iu.herotozero.herotozero_backend.model.EmissionsDaten;
-import de.iu.herotozero.herotozero_backend.repository.BenutzerRepository;
 import de.iu.herotozero.herotozero_backend.service.EmissionsDatenService;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -11,9 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/emissionsdaten")
@@ -21,8 +17,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Consumes(MediaType.APPLICATION_JSON)
 @Stateless
 public class EmissionsDatenResource {
-
-	private static final Logger LOGGER = Logger.getLogger(BenutzerRepository.class.getName());
 	
 	@Inject
 	JsonWebToken jwt;
@@ -53,7 +47,6 @@ public class EmissionsDatenResource {
     @RolesAllowed({"Admin", "User"})
     public Response createEmissionsDaten(EmissionsDaten emissionsDaten) {
     	if (!jwt.getGroups().contains("Admin")) {
-    		LOGGER.log(Level.SEVERE, "Kein Admin");
     		emissionsDaten.setValidiert(false);
     	}
         emissionsDatenService.saveEmissionsDaten(emissionsDaten);
@@ -65,7 +58,6 @@ public class EmissionsDatenResource {
     @RolesAllowed({"Admin", "User"})
     public Response updateEmissionsDaten(@PathParam("id") Long id, EmissionsDaten updatedEmissionsDaten) {
     	if (!jwt.getGroups().contains("Admin")) {
-    		LOGGER.log(Level.SEVERE, "Kein Admin");
     		updatedEmissionsDaten.setValidiert(false);
     	}
         EmissionsDaten emissionsDaten = emissionsDatenService.updateEmissionsDaten(id, updatedEmissionsDaten);

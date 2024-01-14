@@ -33,10 +33,9 @@ public class BenutzerRepository {
             }
             return benutzer;
         } catch (jakarta.persistence.NoResultException e) {
-            return null; // oder eine andere geeignete Antwort
+            return null;
         } catch (Exception e) {
         	LOGGER.log(Level.SEVERE, "Fehler beim Suchen des Benutzers: " + benutzername, e);
-            // Erstmal keine besondere Behandlung des Fehlers!!!
             return null;
         }
     }

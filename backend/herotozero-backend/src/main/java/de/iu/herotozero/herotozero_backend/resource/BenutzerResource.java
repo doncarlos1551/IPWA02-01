@@ -9,9 +9,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/benutzer")
@@ -20,9 +18,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Stateless
 @RolesAllowed({"Admin"})
 public class BenutzerResource {
-	
-	@SuppressWarnings("unused")
-	private static final Logger LOGGER = Logger.getLogger(AuthResource.class.getName());
 	
 	@Inject
 	JsonWebToken jwt;

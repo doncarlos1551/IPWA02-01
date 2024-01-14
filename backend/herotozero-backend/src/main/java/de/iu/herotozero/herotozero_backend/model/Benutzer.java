@@ -24,9 +24,8 @@ public class Benutzer {
     private String email;
 
     @NotBlank(message = "Passwort darf nicht leer sein")
-    private String passwort; // Verschlüsselung später beachten!!!
+    private String passwort;
     
-    // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public Benutzer() {
     }
 

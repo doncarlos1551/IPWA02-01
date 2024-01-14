@@ -60,7 +60,6 @@ public class BenutzerService {
     	}
         Benutzer benutzer = getBenutzer(id);
         if (benutzer != null) {
-        	LOGGER.info("deleteBenutzer: " + benutzer.getBenutzername());
             benutzerRepository.delete(benutzer);
             return true;
         }
