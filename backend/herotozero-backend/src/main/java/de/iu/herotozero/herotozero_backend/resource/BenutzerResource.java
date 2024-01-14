@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -31,8 +32,10 @@ public class BenutzerResource {
 
     @GET
     public Response getAllBenutzer() {
-        List<Benutzer> benutzer = benutzerService.getAllBenutzer();
-        return Response.ok(benutzer).build();
+        List<Benutzer> benutzerListe = benutzerService.getAllBenutzer();
+//        return Response.ok(benutzerListe).build(); // Diese Zeile kann anstelle vom unteren Code zum Testen genutzt werden um das gehashte Passwort mit zu senden.
+        List<BenutzerResponse> benutzerResponseListe = benutzerListe.stream().map(BenutzerResponse::new).collect(Collectors.toList()); // Konvertieren der BenutzerListe in BenutzerResponseListe damit kein Passwort mitgesendet wird!
+        return Response.ok(benutzerResponseListe).build();
     }
 
     @GET
@@ -40,7 +43,8 @@ public class BenutzerResource {
     public Response getBenutzerById(@PathParam("id") Long id) {
         Benutzer benutzer = benutzerService.getBenutzer(id);
         if (benutzer != null) {
-            return Response.ok(benutzer).build();
+        	BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
+            return Response.ok(benutzerResponse).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Holen wurde nicht gefunden.").build();
         }
@@ -52,7 +56,8 @@ public class BenutzerResource {
             return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
         }
         benutzerService.createBenutzer(benutzer);
-        return Response.status(Response.Status.CREATED).entity(benutzer).build();
+        BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
+        return Response.status(Response.Status.CREATED).entity(benutzerResponse).build();
     }
 
     @PUT
@@ -63,7 +68,8 @@ public class BenutzerResource {
         }
         Benutzer benutzer = benutzerService.updateBenutzer(id, updatedBenutzer);
         if (benutzer != null) {
-            return Response.ok(benutzer).build();
+        	BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
+            return Response.ok(benutzerResponse).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Updaten wurde nicht gefunden.").build();
         }
@@ -76,6 +82,30 @@ public class BenutzerResource {
         	return Response.status(Response.Status.OK).entity("Benutzer wurde gelöscht.").build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Löschen wurde nicht gefunden.").build();
+        }
+    }
+    
+    public static class BenutzerResponse {
+        private Long id;
+        private String benutzername;
+        private String email;
+
+        public BenutzerResponse(Benutzer benutzer) {
+            this.id = benutzer.getId();
+            this.benutzername = benutzer.getBenutzername();
+            this.email = benutzer.getEmail();
+        }
+        
+        public Long getId() {
+            return id;
+        }
+
+        public String getBenutzername() {
+            return benutzername;
+        }
+
+        public String getEmail() {
+            return email;
         }
     }
 }

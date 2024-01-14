@@ -2,8 +2,6 @@ package de.iu.herotozero.herotozero_backend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import java.util.Date;
 
 @Entity
 public class EmissionsDaten {
@@ -19,6 +17,9 @@ public class EmissionsDaten {
 
     @NotNull
     private Double co2Emissionen;
+    
+    @NotNull
+    private Boolean validiert = false;
 
     // Nur für Hibernate! Nicht für Nutzung im Code vorgesehen.
     public EmissionsDaten() {
@@ -55,5 +56,13 @@ public class EmissionsDaten {
 
     public void setCo2Emissionen(Double co2Emissionen) {
         this.co2Emissionen = co2Emissionen;
+    }
+    
+    public Boolean getValidiert() {
+        return validiert;
+    }
+
+    public void setValidiert(Boolean validiert) {
+        this.validiert = validiert;
     }
 }

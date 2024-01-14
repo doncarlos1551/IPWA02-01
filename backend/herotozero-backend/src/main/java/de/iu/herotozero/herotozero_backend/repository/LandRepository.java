@@ -33,4 +33,12 @@ public class LandRepository {
     public void delete(Land land) {
         entityManager.remove(entityManager.contains(land) ? land : entityManager.merge(land));
     }
+    
+    public Double calculateGesamtEmissionen(Long landId) {
+        return entityManager.createQuery(
+                "SELECT SUM(e.co2Emissionen) FROM EmissionsDaten e WHERE e.landId = :landId AND e.validiert = TRUE", Double.class)
+            .setParameter("landId", landId)
+            .getSingleResult();
+    }
+
 }

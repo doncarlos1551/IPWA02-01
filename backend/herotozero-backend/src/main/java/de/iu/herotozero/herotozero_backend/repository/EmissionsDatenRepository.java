@@ -33,12 +33,4 @@ public class EmissionsDatenRepository {
     public void delete(EmissionsDaten emissionsDaten) {
         entityManager.remove(entityManager.contains(emissionsDaten) ? emissionsDaten : entityManager.merge(emissionsDaten));
     }
-    
-    public Double berechneGesamtEmissionen(Long landId) {
-        return entityManager.createQuery(
-                "SELECT SUM(e.co2Emissionen) FROM EmissionsDaten e WHERE e.landId = :landId", Double.class)
-            .setParameter("landId", landId)
-            .getSingleResult();
-    }
-
 }

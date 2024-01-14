@@ -42,4 +42,16 @@ public class LandService {
         }
         return false;
     }
+    
+    public void updateGesamtEmissionen(Long landId) {
+        Land land = landRepository.findById(landId);
+        if (land != null) {
+            Double gesamtEmissionen = landRepository.calculateGesamtEmissionen(landId);
+            if (gesamtEmissionen == null) {
+                gesamtEmissionen = 0.0;
+            }
+            land.setGesamtCo2Emissionen(gesamtEmissionen);
+            landRepository.save(land);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package de.iu.herotozero.herotozero_backend.service;
 import de.iu.herotozero.herotozero_backend.model.Benutzer;
 import de.iu.herotozero.herotozero_backend.repository.BenutzerRepository;
 import de.iu.herotozero.herotozero_backend.resource.AuthResource;
+import de.iu.herotozero.herotozero_backend.util.PasswortVerschluesselung;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -29,6 +30,8 @@ public class BenutzerService {
     }
 
     public void createBenutzer(Benutzer benutzer) {
+        String hashedPassword = PasswortVerschluesselung.hashPasswort(benutzer.getPasswort());
+        benutzer.setPasswort(hashedPassword);
         benutzerRepository.save(benutzer);
     }
 
@@ -40,6 +43,10 @@ public class BenutzerService {
         Benutzer existingBenutzer = getBenutzer(id);
         if (existingBenutzer != null) {
             existingBenutzer.setBenutzername(updatedBenutzer.getBenutzername());
+            if (!existingBenutzer.getPasswort().equals(updatedBenutzer.getPasswort())) {
+                String hashedPassword = PasswortVerschluesselung.hashPasswort(updatedBenutzer.getPasswort());
+                existingBenutzer.setPasswort(hashedPassword);
+            }
             benutzerRepository.save(existingBenutzer);
             return existingBenutzer;
         }
