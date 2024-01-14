@@ -17,14 +17,9 @@ import java.util.Base64;
 @Path("/public")
 public class OeffentlichResource {
     private static final Logger logger = Logger.getLogger(OeffentlichResource.class.getName());
-    
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getOeffentlicheDaten() {
-        logger.info("getOeffentlicheDaten Methode aufgerufen");
-        String data = "Test! Dies hier braucht keine Authenthifizierung.";
-        return Response.ok(data).build();
-    }
+
+    @Inject
+	JsonWebToken jwt;
 
     @GET
     @Path("/public-key")
