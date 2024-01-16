@@ -5,7 +5,7 @@
       :class="istMobil ? 'main-layout__header--mobil' : ''"
     >
       <q-icon name="eco" size="lg" color="primary" />
-      <span class="header__title firmen-identitaet">C02-FootPrint</span>
+      <span class="header__title firmen-identitaet">HeroToZero</span>
       <GlobaleNavigation :mobile-ansicht="istMobil" />
     </header>
     <div

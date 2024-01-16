@@ -1,6 +1,5 @@
 export const aktuellesJahr = new Date().getFullYear();
 export const firmenInformationen = {
-    firmenName: 'CO2FootPrint Fantasie GmbH', // Dieser Firmenname ist natürlich ausgedacht!
-    firmenEmail: 'info@co2-footprint-fantasie.com'
+    firmenName: 'LikeHeroToZero GmbH', // Dieser Firmenname ist natürlich ausgedacht!
+    firmenEmail: 'info@like-hero-to-zero.com' // Diese Domain ist natürlich ebenfalls ausgedacht!
 }
-
