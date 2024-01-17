@@ -1,7 +1,9 @@
 package de.iu.herotozero.herotozero_backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class EmissionsDaten {
@@ -11,6 +13,10 @@ public class EmissionsDaten {
 
 	@Column(name = "land_id", nullable = false)
 	private Long landId;
+	
+	@NotBlank(message = "Name darf nicht leer sein")
+    @Size(min = 2, max = 50, message = "Unternehmen muss zwischen 2 und 50 Zeichen lang sein")
+	private String unternehmen;
 
 	@NotNull
     private Integer jahr;
@@ -39,6 +45,14 @@ public class EmissionsDaten {
 
     public void setLandId(Long landId) {
         this.landId = landId;
+    }
+    
+    public String getUnternehmen() {
+        return unternehmen;
+    }
+
+    public void setUnternehmen(String unternehmen) {
+        this.unternehmen = unternehmen;
     }
 
     public Integer getJahr() {

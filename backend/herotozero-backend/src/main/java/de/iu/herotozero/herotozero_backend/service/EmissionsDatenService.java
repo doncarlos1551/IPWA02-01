@@ -34,6 +34,7 @@ public class EmissionsDatenService {
         EmissionsDaten existingEmissionsDaten = getEmissionsDaten(id);
         if (existingEmissionsDaten != null) {
             existingEmissionsDaten.setLandId(updatedEmissionsDaten.getLandId());
+            existingEmissionsDaten.setUnternehmen(updatedEmissionsDaten.getUnternehmen());
             existingEmissionsDaten.setJahr(updatedEmissionsDaten.getJahr());
             existingEmissionsDaten.setCo2Emissionen(updatedEmissionsDaten.getCo2Emissionen());
             existingEmissionsDaten.setValidiert(updatedEmissionsDaten.getValidiert());
