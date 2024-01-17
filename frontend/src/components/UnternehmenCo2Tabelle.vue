@@ -42,70 +42,68 @@
       </thead>
       <tbody>
         <tr v-for="(eintrag, index) in gefilterteDaten" :key="index">
-          <template v-if="adminMode || eintrag.validiert">
-            <td>{{ eintrag.id }}</td>
+          <td>{{ eintrag.id }}</td>
 
-            <template v-if="editId && editId === eintrag.id && editEmission">
-              <td>
-                <q-input v-model="editEmission.unternehmen" filled />
-              </td>
-              <td>
-                <q-input v-model="editEmission.land" filled />
-              </td>
-              <td>
-                <q-input v-model="editEmission.co2" filled />
-              </td>
-              <td v-if="adminMode">
-                <q-toggle v-model="editEmission.validiert" />
-              </td>
-            </template>
-            <template v-else>
-              <td>{{ eintrag.unternehmen }}</td>
-              <td>{{ eintrag.land }}</td>
-              <td>{{ eintrag.co2 }}</td>
-              <td v-if="adminMode">
-                <q-icon
-                  :name="eintrag.validiert ? 'check' : 'close'"
-                  style="cursor: help"
-                  ><q-tooltip>
-                    Eintrag ist
-                    {{ eintrag.validiert ? '' : 'nicht ' }}validiert</q-tooltip
-                  ></q-icon
-                >
-              </td>
-            </template>
-            <td v-if="editMode">
-              <template v-if="editId && editId === eintrag.id">
-                <q-icon name="save" @click="emitUpdate()"
-                  ><q-tooltip> Bearbeiteten Eintrag abspeichern </q-tooltip>
-                </q-icon>
-                <q-icon name="close" @click="cancelEdit()"
-                  ><q-tooltip> Bearbeiten abbrechen </q-tooltip>
-                </q-icon>
-              </template>
-              <template v-else>
-                <q-icon name="edit" @click="startEdit(eintrag.id, eintrag)"
-                  ><q-tooltip> Eintrag bearbeiten </q-tooltip>
-                </q-icon>
-                <q-icon name="delete" @click="emitDelete(eintrag.id)"
-                  ><q-tooltip> Eintrag löschen </q-tooltip>
-                </q-icon>
-              </template>
+          <template v-if="editId && editId === eintrag.id && editEmission">
+            <td>
+              <q-input v-model="editEmission.unternehmen" filled />
             </td>
-            <td v-if="validateMode && !editMode">
-              <template v-if="!eintrag.validiert">
-                <q-icon
-                  tooltip="Validieren"
-                  name="check"
-                  @click="emitValidate(eintrag.id)"
-                  ><q-tooltip> Eintrag validieren </q-tooltip>
-                </q-icon>
-                <q-icon name="delete" @click="emitDelete(eintrag.id)"
-                  ><q-tooltip> Eintrag löschen </q-tooltip>
-                </q-icon>
-              </template>
+            <td>
+              <q-input v-model="editEmission.land" filled />
+            </td>
+            <td>
+              <q-input v-model="editEmission.co2" filled />
+            </td>
+            <td v-if="adminMode">
+              <q-toggle v-model="editEmission.validiert" />
             </td>
           </template>
+          <template v-else>
+            <td>{{ eintrag.unternehmen }}</td>
+            <td>{{ eintrag.land }}</td>
+            <td>{{ eintrag.co2 }}</td>
+            <td v-if="adminMode">
+              <q-icon
+                :name="eintrag.validiert ? 'check' : 'close'"
+                style="cursor: help"
+                ><q-tooltip>
+                  Eintrag ist
+                  {{ eintrag.validiert ? '' : 'nicht ' }}validiert</q-tooltip
+                ></q-icon
+              >
+            </td>
+          </template>
+          <td v-if="editMode">
+            <template v-if="editId && editId === eintrag.id">
+              <q-icon name="save" @click="emitUpdate()"
+                ><q-tooltip> Bearbeiteten Eintrag abspeichern </q-tooltip>
+              </q-icon>
+              <q-icon name="close" @click="cancelEdit()"
+                ><q-tooltip> Bearbeiten abbrechen </q-tooltip>
+              </q-icon>
+            </template>
+            <template v-else>
+              <q-icon name="edit" @click="startEdit(eintrag.id, eintrag)"
+                ><q-tooltip> Eintrag bearbeiten </q-tooltip>
+              </q-icon>
+              <q-icon name="delete" @click="emitDelete(eintrag.id)"
+                ><q-tooltip> Eintrag löschen </q-tooltip>
+              </q-icon>
+            </template>
+          </td>
+          <td v-if="validateMode && !editMode">
+            <template v-if="!eintrag.validiert">
+              <q-icon
+                tooltip="Validieren"
+                name="check"
+                @click="emitValidate(eintrag.id)"
+                ><q-tooltip> Eintrag validieren </q-tooltip>
+              </q-icon>
+              <q-icon name="delete" @click="emitDelete(eintrag.id)"
+                ><q-tooltip> Eintrag löschen </q-tooltip>
+              </q-icon>
+            </template>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -167,7 +165,10 @@ export default defineComponent({
             eintrag.unternehmen
               .toLowerCase()
               .includes(filterUnternehmen.value.toLowerCase()) &&
-            eintrag.land.toLowerCase().includes(filterLand.value.toLowerCase())
+            eintrag.land
+              .toLowerCase()
+              .includes(filterLand.value.toLowerCase()) &&
+            (eintrag.validiert || props.adminMode)
         )
         .sort((a, b) => {
           let vergleich = 0;
