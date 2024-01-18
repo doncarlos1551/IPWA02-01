@@ -36,22 +36,17 @@
           <td>
             <span>{{ eintrag.id }}</span>
           </td>
-          <template v-if="editId && editId === eintrag.id && editEmission">
-            <td>
-              <q-input v-model="editEmission.land" filled />
-            </td>
-            <td>
-              <q-input v-model="editEmission.co2" filled />
-            </td>
-          </template>
-          <template v-else>
-            <td>
-              <span>{{ eintrag.land }}</span>
-            </td>
-            <td>
-              <span>{{ eintrag.co2 }}</span>
-            </td>
-          </template>
+          <td>
+            <q-input
+              v-if="editId && editId === eintrag.id && editEmission"
+              v-model="editEmission.land"
+              filled
+            />
+            <span v-else>{{ eintrag.land }}</span>
+          </td>
+          <td>
+            <span>{{ eintrag.co2 }}</span>
+          </td>
           <td v-if="editMode">
             <template v-if="editId && editId === eintrag.id">
               <q-icon name="save" @click="emitUpdate()"
@@ -86,6 +81,16 @@ export interface LandEmission {
   co2: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isLandEmission(obj: any): obj is LandEmission {
+  return (
+    obj &&
+    typeof obj.id === 'number' &&
+    typeof obj.land === 'string' &&
+    typeof obj.co2 === 'number'
+  );
+}
+
 export default defineComponent({
   name: 'LandCo2Tabelle',
   props: {
@@ -96,6 +101,14 @@ export default defineComponent({
     editMode: {
       type: Boolean,
       default: false,
+    },
+  },
+  emits: {
+    delete: (payload: number): boolean => {
+      return typeof payload === 'boolean';
+    },
+    update: (payload: LandEmission): boolean => {
+      return isLandEmission(payload);
     },
   },
   setup(props, { emit }) {
@@ -164,7 +177,9 @@ export default defineComponent({
 
     function emitUpdate() {
       console.log('update', editEmission.value);
-      emit('update', editEmission.value);
+      if (editEmission.value) {
+        emit('update', editEmission.value);
+      }
       editId.value = null;
       editEmission.value = null;
     }

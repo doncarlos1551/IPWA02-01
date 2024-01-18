@@ -18,13 +18,13 @@ type PublicTestResponse = string;
 type PrivateTestResponse = string;
 
 // --- BENUTZER TYP-DEFINITIONEN ---
-interface BenutzerResponse {
+export interface BenutzerResponse {
   id: number;
   benutzername: string;
   email: string;
 }
 
-interface BenutzerRequest {
+export interface BenutzerRequest {
   benutzername: string;
   email: string;
   passwort: string;
@@ -39,11 +39,11 @@ type BenutzerAktualisierenResponse = BenutzerResponse;
 type BenutzerLoeschenResponse = string;
 
 // --- LAND TYP-DEFINITIONEN ---
-interface LandRequest {
+export interface LandRequest {
   name: string;
 }
 
-interface LandResponse {
+export interface LandResponse {
   id: number;
   name: string;
   gesamtCo2Emissionen: number;
@@ -58,15 +58,17 @@ type LandAktualisierenResponse = LandResponse;
 type LandLoeschenResponse = string;
 
 // --- LAND TYP-DEFINITIONEN ---
-interface EmissionsDatenRequest {
+export interface EmissionsDatenRequest {
   landId: number;
+  unternehmen: string;
   jahr: number;
   co2Emissionen: number;
   validiert?: boolean; // optional für admin
 }
-interface EmissionsDatenResponse {
+export interface EmissionsDatenResponse {
   id: number;
   landId: number;
+  unternehmen: string;
   jahr: number;
   co2Emissionen: number;
   validiert: boolean;
@@ -97,10 +99,22 @@ export function useApiService() {
   const router = useRouter();
 
   const errorNachricht = ref<string | null>(null);
+  const systemErrorNachricht = ref<string | null>(null);
   const decodedJwt = ref<JwtPayload | null>(null);
 
   const baseUrl = localStorage.getItem('baseUrl') || '';
   const jwtToken = localStorage.getItem('jwtToken');
+
+  const apiPublic = axios.create({
+    baseURL: baseUrl,
+  });
+
+  const apiPrivate = axios.create({
+    baseURL: baseUrl,
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  });
 
   const isValidUrl = (url: string): boolean => /^http(s)?:\/\/.*/.test(url);
 
@@ -112,7 +126,8 @@ export function useApiService() {
   // === UTIL METHODEN ===
   const showNotify = (message: string, type = 'negative') => {
     Notify.create({
-      message: message,
+      message: message.replace(/\n/g, '<br />'),
+      html: true,
       type: type,
       position: 'top',
       timeout: 2500,
@@ -143,12 +158,20 @@ export function useApiService() {
     }
   };
 
+  const istJwtAbgelaufen = () => {
+    const currentTime = Date.now() / 1000; // Zeit in Sekunden seit dem Unix-Epoch
+    if (decodedJwt.value && decodedJwt.value.exp) {
+      return decodedJwt.value.exp < currentTime;
+    }
+    return false;
+  };
+
   // === AUTH METHODEN ===
   const login = async (loginData: LoginRequest) => {
     errorNachricht.value = null;
     try {
-      const response = await axios.post<LoginResponse>(
-        `${baseUrl}/auth/login`,
+      const response = await apiPublic.post<LoginResponse>(
+        `/auth/login`,
         loginData
       );
 
@@ -158,8 +181,21 @@ export function useApiService() {
       router.go(0);
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Login-Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Login-Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Login-Fehler: Unbekannter Fehler`;
       }
@@ -170,14 +206,27 @@ export function useApiService() {
   // Register
   const register = async (registerData: RegisterRequest) => {
     try {
-      const response = await axios.post<RegisterResponse>(
-        `${baseUrl}/auth/register`,
+      const response = await apiPublic.post<RegisterResponse>(
+        `/auth/register`,
         registerData
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Register-Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Register-Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Register-Fehler: Unbekannter Fehler`;
       }
@@ -188,14 +237,27 @@ export function useApiService() {
   // === TEST METHODEN ===
   const publicTest = async () => {
     try {
-      const response = await axios.get<PublicTestResponse>(
-        `${baseUrl}/test/public-test`
+      const response = await apiPublic.get<PublicTestResponse>(
+        `/test/public-test`
       );
       showNotify(response.data, 'positive');
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Public Test Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Public Test Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Public Test Fehler: Unbekannter Fehler`;
       }
@@ -205,13 +267,31 @@ export function useApiService() {
 
   const privateTest = async () => {
     try {
-      const response = await axios.get<PrivateTestResponse>(
-        `${baseUrl}/test/private-test`
+      const response = await apiPrivate.get<PrivateTestResponse>(
+        `/test/private-test`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Private Test Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Private Test Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Private Test Fehler: Unbekannter Fehler`;
       }
@@ -222,13 +302,24 @@ export function useApiService() {
   // === BENUTZER METHODEN ===
   const alleBenutzer = async () => {
     try {
-      const response = await axios.get<AlleBenutzerResponse>(
-        `${baseUrl}/benutzer`
-      );
+      const response = await apiPrivate.get<AlleBenutzerResponse>(`/benutzer`);
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Alle Benutzer Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Alle Benutzer Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Alle Benutzer Fehler: Unbekannter Fehler`;
       }
@@ -238,13 +329,26 @@ export function useApiService() {
 
   const benutzerNachId = async (id: number) => {
     try {
-      const response = await axios.get<BenutzerNachIdResponse>(
-        `${baseUrl}/benutzer/${id}`
+      const response = await apiPrivate.get<BenutzerNachIdResponse>(
+        `/benutzer/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Benutzer Nach ID Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Benutzer Nach ID Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Benutzer Nach ID Fehler: Unbekannter Fehler`;
       }
@@ -254,14 +358,27 @@ export function useApiService() {
 
   const neuerBenutzer = async (benutzerData: NeuerBenutzerRequest) => {
     try {
-      const response = await axios.post<NeuerBenutzerResponse>(
-        `${baseUrl}/benutzer`,
+      const response = await apiPrivate.post<NeuerBenutzerResponse>(
+        `/benutzer`,
         benutzerData
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Neuer Benutzer Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Neuer Benutzer Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Neuer Benutzer Fehler: Unbekannter Fehler`;
       }
@@ -274,14 +391,27 @@ export function useApiService() {
     benutzerData: BenutzerAktualisierenRequest
   ) => {
     try {
-      const response = await axios.put<BenutzerAktualisierenResponse>(
-        `${baseUrl}/benutzer/${id}`,
+      const response = await apiPrivate.put<BenutzerAktualisierenResponse>(
+        `/benutzer/${id}`,
         benutzerData
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Benutzer Aktualisieren Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Benutzer Aktualisieren Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Benutzer Aktualisieren Fehler: Unbekannter Fehler`;
       }
@@ -291,13 +421,26 @@ export function useApiService() {
 
   const benutzerLoeschen = async (id: number) => {
     try {
-      const response = await axios.delete<BenutzerLoeschenResponse>(
-        `${baseUrl}/benutzer/${id}`
+      const response = await apiPrivate.delete<BenutzerLoeschenResponse>(
+        `/benutzer/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Benutzer Löschen Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Benutzer Löschen Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Benutzer Löschen Fehler: Unbekannter Fehler`;
       }
@@ -308,13 +451,24 @@ export function useApiService() {
   // === LAND METHODEN ===
   const alleLaender = async () => {
     try {
-      const response = await axios.get<AlleLaenderResponse>(
-        `${baseUrl}/laender/`
-      );
+      const response = await apiPublic.get<AlleLaenderResponse>(`/laender/`);
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Alle Länder Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Alle Länder Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Alle Länder Fehler: Unbekannter Fehler`;
       }
@@ -324,13 +478,26 @@ export function useApiService() {
 
   const landNachId = async (id: number) => {
     try {
-      const response = await axios.get<LandNachIdResponse>(
-        `${baseUrl}/laender/${id}`
+      const response = await apiPublic.get<LandNachIdResponse>(
+        `/laender/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Land Nach ID Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Land Nach ID Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Land Nach ID Fehler: Unbekannter Fehler`;
       }
@@ -339,15 +506,29 @@ export function useApiService() {
   };
 
   const neuesLand = async (landData: NeuesLandRequest) => {
+    console.log(landData);
     try {
-      const response = await axios.post<NeuesLandResponse>(
-        `${baseUrl}/laender`,
+      const response = await apiPrivate.post<NeuesLandResponse>(
+        `/laender`,
         landData
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Neues Land Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Neues Land Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Neues Land Fehler: Unbekannter Fehler`;
       }
@@ -360,14 +541,27 @@ export function useApiService() {
     landData: LandAktualisierenRequest
   ) => {
     try {
-      const response = await axios.put<LandAktualisierenResponse>(
-        `${baseUrl}/laender/${id}`,
+      const response = await apiPrivate.put<LandAktualisierenResponse>(
+        `/laender/${id}`,
         landData
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Land Aktualisieren Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Land Aktualisieren Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Land Aktualisieren Fehler: Unbekannter Fehler`;
       }
@@ -377,13 +571,26 @@ export function useApiService() {
 
   const landLoeschen = async (id: number) => {
     try {
-      const response = await axios.delete<LandLoeschenResponse>(
-        `${baseUrl}/laender/${id}`
+      const response = await apiPrivate.delete<LandLoeschenResponse>(
+        `/laender/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Land Löschen Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Land Löschen Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Land Löschen Fehler: Unbekannter Fehler`;
       }
@@ -394,13 +601,26 @@ export function useApiService() {
   // === EMISSIONSDATEN METHODEN ===
   const alleEmissionsDaten = async () => {
     try {
-      const response = await axios.get<AlleEmissionsDatenResponse>(
-        `${baseUrl}/emissionsdaten/`
+      const response = await apiPublic.get<AlleEmissionsDatenResponse>(
+        `/emissionsdaten/`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Alle EmissionsDaten Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Alle EmissionsDaten Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Alle EmissionsDaten Fehler: Unbekannter Fehler`;
       }
@@ -410,13 +630,26 @@ export function useApiService() {
 
   const emissionsDatenNachId = async (id: number) => {
     try {
-      const response = await axios.get<EmissionsDatenNachIdResponse>(
-        `${baseUrl}/emissionsdaten/${id}`
+      const response = await apiPublic.get<EmissionsDatenNachIdResponse>(
+        `/emissionsdaten/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `EmissionsDaten Nach ID Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `EmissionsDaten Nach ID Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `EmissionsDaten Nach ID Fehler: Unbekannter Fehler`;
       }
@@ -428,14 +661,27 @@ export function useApiService() {
     emissionsDaten: NeueEmissionsDatenRequest
   ) => {
     try {
-      const response = await axios.post<NeueEmissionsDatenResponse>(
-        `${baseUrl}/emissionsdaten/`,
+      const response = await apiPrivate.post<NeueEmissionsDatenResponse>(
+        `/emissionsdaten/`,
         emissionsDaten
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Neue EmissionsDaten Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Neue EmissionsDaten Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Neue EmissionsDaten Fehler: Unbekannter Fehler`;
       }
@@ -448,14 +694,28 @@ export function useApiService() {
     emissionsDaten: EmissionsDatenAktualisierenRequest
   ) => {
     try {
-      const response = await axios.put<EmissionsDatenAktualisierenResponse>(
-        `${baseUrl}/emissionsdaten/${id}`,
-        emissionsDaten
-      );
+      const response =
+        await apiPrivate.put<EmissionsDatenAktualisierenResponse>(
+          `/emissionsdaten/${id}`,
+          emissionsDaten
+        );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `EmissionsDaten Aktualisieren Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `EmissionsDaten Aktualisieren Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `EmissionsDaten Aktualisieren Fehler: Unbekannter Fehler`;
       }
@@ -468,14 +728,27 @@ export function useApiService() {
     emissionsDaten: EmissionsDatenValidierenRequest
   ) => {
     try {
-      const response = await axios.put<EmissionsDatenValidierenResponse>(
-        `${baseUrl}/emissionsdaten/validieren/${id}`,
+      const response = await apiPrivate.put<EmissionsDatenValidierenResponse>(
+        `/emissionsdaten/validieren/${id}`,
         emissionsDaten
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `EmissionsDaten Validieren Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `EmissionsDaten Validieren Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `EmissionsDaten Validieren Fehler: Unbekannter Fehler`;
       }
@@ -485,13 +758,26 @@ export function useApiService() {
 
   const emissionsDatenLoeschen = async (id: number) => {
     try {
-      const response = await axios.delete<EmissionsDatenLoeschenResponse>(
-        `${baseUrl}/emissionsdaten/${id}`
+      const response = await apiPrivate.delete<EmissionsDatenLoeschenResponse>(
+        `/emissionsdaten/${id}`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `EmissionsDaten Löschen Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `EmissionsDaten Löschen Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `EmissionsDaten Löschen Fehler: Unbekannter Fehler`;
       }
@@ -502,13 +788,26 @@ export function useApiService() {
   // === PUBLIC METHODEN ===
   const publicKey = async () => {
     try {
-      const response = await axios.get<PublicKeyResponse>(
-        `${baseUrl}/public/public-key`
+      const response = await apiPublic.get<PublicKeyResponse>(
+        `/public/public-key`
       );
       return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        errorNachricht.value = `Public Key Fehler: ${error.message}`;
+      if (
+        error instanceof Error &&
+        axios.isAxiosError(error) &&
+        error.response
+      ) {
+        systemErrorNachricht.value = error.message;
+        let tempErrorNachricht = error.message;
+        if (
+          typeof error.response.data === 'object' &&
+          'nachricht' in error.response.data &&
+          typeof error.response.data.nachricht === 'string'
+        ) {
+          tempErrorNachricht = error.response.data.nachricht;
+        }
+        errorNachricht.value = `Public Key Fehler: ${tempErrorNachricht}`;
       } else {
         errorNachricht.value = `Public Key Fehler: Unbekannter Fehler`;
       }
@@ -520,6 +819,11 @@ export function useApiService() {
 
   onMounted(() => {
     dekodiereJwt();
+
+    if (istJwtAbgelaufen()) {
+      showNotify('Login-Token ist abgelaufen! Abmelden...');
+      logout();
+    }
   });
 
   return {

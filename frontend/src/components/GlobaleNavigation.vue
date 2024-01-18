@@ -16,16 +16,21 @@
         :class="mobileAnsicht ? 'einträge__unter-bereich--mobil' : ''"
       >
         <span v-for="item in navigationsEintraegeMain" :key="item.path">
-          <router-link :to="item.path">{{ item.name }}</router-link>
+          <router-link
+            v-if="
+              !item.groups ||
+              (decodedJwt &&
+                item.groups.some((rolle) => decodedJwt.groups?.includes(rolle)))
+            "
+            :to="item.path"
+            >{{ item.name }}</router-link
+          >
         </span>
       </div>
       <div
         class="einträge__user einträge__unter-bereich"
         :class="mobileAnsicht ? 'einträge__unter-bereich--mobil' : ''"
       >
-        <!-- <span v-for="item in navigationsEintraegeUser" :key="item.path">
-          <router-link :to="item.path">{{ item.name }}</router-link>
-        </span> -->
         <a v-if="decodedJwt === null" @click="zeigeLoginDialog = true">Login</a>
         <span v-else>
           Willkommen, {{ decodedJwt.sub }}! <a @click="logout()">logout</a>
@@ -96,10 +101,13 @@ export default defineComponent({
     const navigationsEintraegeMain = [
       { name: 'Startseite', path: '/' },
       { name: 'Über Emissionen', path: '/emission' },
+      {
+        name: 'Emissionen-Verwaltung',
+        path: '/emission-verwaltung',
+        groups: ['User'],
+      },
       { name: 'Über Nachhaltigkeit', path: '/nachhaltigkeit' },
     ];
-
-    const navigationsEintraegeUser = [{ name: 'login', path: '/' }];
 
     function menueUmschalten() {
       zeigeMenue.value = !zeigeMenue.value;
@@ -112,7 +120,6 @@ export default defineComponent({
       zeigeLoginDialog,
       zeigeSettingsDialog,
       navigationsEintraegeMain,
-      navigationsEintraegeUser,
       menueUmschalten,
     };
   },

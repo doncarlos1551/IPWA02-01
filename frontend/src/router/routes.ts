@@ -9,12 +9,26 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/emission',
     component: () => import('layouts/HauptLayout.vue'),
-    children: [{ path: '', component: () => import('pages/EmissionsdatenSeite.vue') }],
+    children: [
+      { path: '', component: () => import('pages/EmissionsdatenSeite.vue') },
+    ],
+  },
+  {
+    path: '/emission-verwaltung',
+    component: () => import('layouts/HauptLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/EmissionsdatenVerwaltungSeite.vue'),
+      },
+    ],
   },
   {
     path: '/nachhaltigkeit',
     component: () => import('layouts/HauptLayout.vue'),
-    children: [{ path: '', component: () => import('pages/NachhaltigkeitSeite.vue') }],
+    children: [
+      { path: '', component: () => import('pages/NachhaltigkeitSeite.vue') },
+    ],
   },
   {
     path: '/:catchAll(.*)*',

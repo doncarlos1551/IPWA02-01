@@ -7,19 +7,48 @@
       1000kg/Jahr.
     </p>
     <hr />
-    <UnternehmenCo2Tabelle :emissions-daten="unternehmenEmissionsDaten" />
-    <LandCo2Tabelle :emissions-daten="landEmissionsDaten" />
+    <q-tabs
+      v-model="tabellenTab"
+      class="bg-primary text-dark shadow-2"
+      align="justify"
+    >
+      <q-tab name="unternehmen" label="Unternehmen" />
+      <q-tab name="land" label="Land" />
+    </q-tabs>
+
+    <q-tab-panels v-model="tabellenTab" style="background-color: transparent">
+      <q-tab-panel name="unternehmen">
+        <UnternehmenCo2Tabelle
+          :emissions-daten="unternehmenEmissionsDaten"
+          :adminMode="decodedJwt && decodedJwt.groups?.includes('Admin')"
+          :validateMode="false"
+          :editMode="false"
+        />
+      </q-tab-panel>
+      <q-tab-panel name="land">
+        <LandCo2Tabelle :emissions-daten="landEmissionsDaten" />
+      </q-tab-panel>
+    </q-tab-panels>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
+import {
+  EmissionsDatenResponse,
+  LandResponse,
+  useApiService,
+} from '@/composables/useApiService';
 
 import { UnternehmenEmission } from '@/components/UnternehmenCo2Tabelle.vue';
 import { LandEmission } from '@/components/LandCo2Tabelle.vue';
 
 import UnternehmenCo2Tabelle from 'components/UnternehmenCo2Tabelle.vue';
 import LandCo2Tabelle from 'components/LandCo2Tabelle.vue';
+import {
+  convertEmissionsDatenResponseZuUnternehmenEmission,
+  convertLandResponseZuLandEmission,
+} from '@/utils/dataUtils';
 
 export default defineComponent({
   name: 'EmissionsdatenSeite',
@@ -28,13 +57,22 @@ export default defineComponent({
     LandCo2Tabelle,
   },
   setup() {
-    // Bei den hier dargestellten Daten sind die Namen der Unternehmen frei erfunden, genauso wie die co2-Ausstoßwerte.
+    const { decodedJwt, alleEmissionsDaten, alleLaender } = useApiService();
+
+    const tabellenTab = ref<'unternehmen' | 'land'>('unternehmen');
     const unternehmenEmissionsDaten = ref<UnternehmenEmission[]>([
-      { id: 1, unternehmen: 'FliegendeFrösche GmbH', land: 'Mexiko', co2: 93 },
+      {
+        id: 1,
+        unternehmen: 'FliegendeFrösche GmbH',
+        land: 'Mexiko',
+        jahr: 2023,
+        co2: 93,
+      },
       {
         id: 2,
         unternehmen: 'TurboTreter AG',
         land: 'Indien',
+        jahr: 2023,
         co2: 252,
         validiert: true,
       },
@@ -42,51 +80,77 @@ export default defineComponent({
         id: 3,
         unternehmen: 'QuirligeQuallen UG',
         land: 'Frankreich',
+        jahr: 2023,
         co2: 241,
       },
       {
         id: 4,
         unternehmen: 'FantasieFirma24.com',
         land: 'Deutschland',
+        jahr: 2023,
         co2: 111,
       },
-      { id: 5, unternehmen: 'BlinkendeBirnen Ltd.', land: 'Ägypten', co2: 120 },
-      { id: 6, unternehmen: 'SuperSupermarkt OHG', land: 'USA', co2: 150 },
+      {
+        id: 5,
+        unternehmen: 'BlinkendeBirnen Ltd.',
+        land: 'Ägypten',
+        jahr: 2023,
+        co2: 120,
+      },
+      {
+        id: 6,
+        unternehmen: 'SuperSupermarkt OHG',
+        land: 'USA',
+        jahr: 2023,
+        co2: 150,
+      },
       {
         id: 7,
         unternehmen: 'WackelndeWürmer e.V.',
         land: 'Brasilien',
+        jahr: 2023,
         co2: 67,
       },
       {
         id: 8,
         unternehmen: 'MaxMustermannEnterprises',
         land: 'Andorra',
+        jahr: 2023,
         co2: 202,
       },
       {
         id: 20,
         unternehmen: 'SpringendeSuppenkellen Corp',
         land: 'Äthiopien',
+        jahr: 2023,
         co2: 225,
       },
-      { id: 10, unternehmen: 'TanzendeTassen KG', land: 'Südkorea', co2: 132 },
+      {
+        id: 10,
+        unternehmen: 'TanzendeTassen KG',
+        land: 'Südkorea',
+        jahr: 2023,
+        co2: 132,
+      },
       {
         id: 11,
         unternehmen: 'PfeifendePfannen Inc.',
         land: 'Spanien',
+        jahr: 2023,
         co2: 103,
       },
       {
         id: 12,
         unternehmen: 'ZappelndeZwiebeln eG',
         land: 'Belgien',
+        jahr: 2023,
         co2: 143,
       },
       {
         id: 14,
         unternehmen: 'HuepfendeHummeln GmbH',
         land: 'Neuseeland',
+        jahr: 2023,
         co2: 212,
       },
     ]);
@@ -139,7 +203,32 @@ export default defineComponent({
       },
     ]);
 
-    return { unternehmenEmissionsDaten, landEmissionsDaten };
+    onMounted(async () => {
+      const tempLandEmissionsDaten = (await alleLaender()) as LandResponse[];
+      if (tempLandEmissionsDaten) {
+        landEmissionsDaten.value = tempLandEmissionsDaten.map((land) =>
+          convertLandResponseZuLandEmission(land)
+        );
+      }
+      const tempUnternehmenEmissionsDaten =
+        (await alleEmissionsDaten()) as EmissionsDatenResponse[];
+      if (tempUnternehmenEmissionsDaten) {
+        unternehmenEmissionsDaten.value = tempUnternehmenEmissionsDaten.map(
+          (daten) =>
+            convertEmissionsDatenResponseZuUnternehmenEmission(
+              daten,
+              landEmissionsDaten.value
+            )
+        );
+      }
+    });
+
+    return {
+      decodedJwt,
+      tabellenTab,
+      unternehmenEmissionsDaten,
+      landEmissionsDaten,
+    };
   },
 });
 </script>

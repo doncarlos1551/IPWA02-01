@@ -29,6 +29,13 @@
               :name="sortierIcon"
             />
           </th>
+          <th @click="sortiereTabelle('jahr')">
+            Jahr<q-icon
+              v-if="sortierSchluessel === 'jahr'"
+              :name="sortierIcon"
+            />
+          </th>
+
           <th @click="sortiereTabelle('co2')">
             CO2-Wert<q-icon
               v-if="sortierSchluessel === 'co2'"
@@ -52,6 +59,9 @@
               <q-input v-model="editEmission.land" filled />
             </td>
             <td>
+              <q-input v-model="editEmission.jahr" filled />
+            </td>
+            <td>
               <q-input v-model="editEmission.co2" filled />
             </td>
             <td v-if="adminMode">
@@ -61,6 +71,7 @@
           <template v-else>
             <td>{{ eintrag.unternehmen }}</td>
             <td>{{ eintrag.land }}</td>
+            <td>{{ eintrag.jahr }}</td>
             <td>{{ eintrag.co2 }}</td>
             <td v-if="adminMode">
               <q-icon
@@ -116,10 +127,25 @@ import _ from 'lodash';
 
 export interface UnternehmenEmission {
   id: number;
-  unternehmen: string;
   land: string;
+  unternehmen: string;
+  jahr: number;
   co2: number;
   validiert?: boolean;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isUnternehmenEmission(obj: any): obj is UnternehmenEmission {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.id === 'number' &&
+    typeof obj.land === 'string' &&
+    typeof obj.unternehmen === 'string' &&
+    typeof obj.jahr === 'number' &&
+    typeof obj.co2 === 'number' &&
+    (typeof obj.validiert === 'boolean' || obj.validiert === undefined)
+  );
 }
 
 export default defineComponent({
@@ -140,6 +166,17 @@ export default defineComponent({
     validateMode: {
       type: Boolean,
       default: false,
+    },
+  },
+  emits: {
+    delete: (payload: number): boolean => {
+      return typeof payload === 'boolean';
+    },
+    update: (payload: UnternehmenEmission): boolean => {
+      return isUnternehmenEmission(payload);
+    },
+    validate: (payload: number): boolean => {
+      return typeof payload === 'boolean';
     },
   },
   setup(props, { emit }) {
@@ -200,6 +237,9 @@ export default defineComponent({
     function startEdit(id: number, eintrag: UnternehmenEmission) {
       console.log('start', id);
       editEmission.value = _.cloneDeep(eintrag);
+      if (!editEmission.value.validiert) {
+        editEmission.value.validiert = false;
+      }
       editId.value = id;
     }
 
@@ -216,7 +256,9 @@ export default defineComponent({
 
     function emitUpdate() {
       console.log('update', editEmission.value);
-      emit('update', editEmission.value);
+      if (editEmission.value) {
+        emit('update', editEmission.value);
+      }
       editId.value = null;
       editEmission.value = null;
     }
@@ -267,6 +309,7 @@ export default defineComponent({
     }
 
     td {
+      min-width: 65px;
       padding: 6px;
       text-align: left;
       border-bottom: 1px solid lightgrey;
