@@ -15,17 +15,18 @@
         class="einträge__main einträge__unter-bereich"
         :class="mobileAnsicht ? 'einträge__unter-bereich--mobil' : ''"
       >
-        <span v-for="item in navigationsEintraegeMain" :key="item.path">
-          <router-link
+        <template v-for="item in navigationsEintraegeMain">
+          <span
             v-if="
               !item.groups ||
               (decodedJwt &&
                 item.groups.some((rolle) => decodedJwt.groups?.includes(rolle)))
             "
-            :to="item.path"
-            >{{ item.name }}</router-link
+            :key="item.path"
           >
-        </span>
+            <router-link :to="item.path">{{ item.name }}</router-link>
+          </span>
+        </template>
       </div>
       <div
         class="einträge__user einträge__unter-bereich"
@@ -100,13 +101,13 @@ export default defineComponent({
 
     const navigationsEintraegeMain = [
       { name: 'Startseite', path: '/' },
-      { name: 'Über Emissionen', path: '/emission' },
+      { name: 'Emissionen', path: '/emission' },
       {
         name: 'Emissionen-Verwaltung',
         path: '/emission-verwaltung',
         groups: ['User'],
       },
-      { name: 'Über Nachhaltigkeit', path: '/nachhaltigkeit' },
+      { name: 'Nachhaltigkeit', path: '/nachhaltigkeit' },
     ];
 
     function menueUmschalten() {

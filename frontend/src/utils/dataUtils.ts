@@ -48,7 +48,7 @@ export function convertUnternehmenEmissionZuEmissionsDatenRequest(
   const tempLandId =
     landEmissionen.find(
       (emission) => emission.land === unternehmenEmission.land
-    )?.land ?? 'Unbekanntes Land';
+    )?.id ?? -1;
   return {
     landId: tempLandId,
     unternehmen: unternehmenEmission.unternehmen,
