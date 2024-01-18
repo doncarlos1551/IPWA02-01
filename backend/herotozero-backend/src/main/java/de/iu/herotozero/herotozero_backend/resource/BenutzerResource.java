@@ -1,6 +1,7 @@
 package de.iu.herotozero.herotozero_backend.resource;
 
 import de.iu.herotozero.herotozero_backend.model.Benutzer;
+import de.iu.herotozero.herotozero_backend.util.StringResponse;
 import de.iu.herotozero.herotozero_backend.service.BenutzerService;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -41,14 +42,14 @@ public class BenutzerResource {
         	BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
             return Response.ok(benutzerResponse).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Holen wurde nicht gefunden.").build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new StringResponse("Benutzer zum Holen wurde nicht gefunden.")).build();
         }
     }
 
     @POST
     public Response createBenutzer(Benutzer benutzer) {
         if (!benutzerService.isBenutzernameVerfügbar(benutzer.getBenutzername())) {
-            return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
+            return Response.status(Response.Status.CONFLICT).entity(new StringResponse("Benutzername bereits vergeben.")).build();
         }
         benutzerService.createBenutzer(benutzer);
         BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
@@ -59,14 +60,14 @@ public class BenutzerResource {
     @Path("/{id}")
     public Response updateBenutzer(@PathParam("id") Long id, Benutzer updatedBenutzer) {
         if (!benutzerService.isBenutzernameVerfügbar(updatedBenutzer.getBenutzername())) {
-            return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben.").build();
+            return Response.status(Response.Status.CONFLICT).entity(new StringResponse("Benutzername bereits vergeben.")).build();
         }
         Benutzer benutzer = benutzerService.updateBenutzer(id, updatedBenutzer);
         if (benutzer != null) {
         	BenutzerResponse benutzerResponse = new BenutzerResponse(benutzer); // Kontervertieren in BenutzerResponse damit kein Passwort mit geschickt wird!
             return Response.ok(benutzerResponse).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Updaten wurde nicht gefunden.").build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new StringResponse("Benutzer zum Updaten wurde nicht gefunden.")).build();
         }
     }
 
@@ -74,9 +75,9 @@ public class BenutzerResource {
     @Path("/{id}")
     public Response deleteBenutzer(@PathParam("id") Long id) {
         if (benutzerService.deleteBenutzer(id)) {
-        	return Response.status(Response.Status.OK).entity("Benutzer wurde gelöscht.").build();
+        	return Response.status(Response.Status.OK).entity(new StringResponse("Benutzer wurde gelöscht.")).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Benutzer zum Löschen wurde nicht gefunden.").build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new StringResponse("Benutzer zum Löschen wurde nicht gefunden.")).build();
         }
     }
     

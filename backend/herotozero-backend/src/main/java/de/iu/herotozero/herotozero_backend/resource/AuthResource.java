@@ -4,6 +4,7 @@ import de.iu.herotozero.herotozero_backend.model.Benutzer;
 import de.iu.herotozero.herotozero_backend.service.AuthService;
 import de.iu.herotozero.herotozero_backend.service.BenutzerService;
 import de.iu.herotozero.herotozero_backend.util.PasswortVerschluesselung;
+import de.iu.herotozero.herotozero_backend.util.StringResponse;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -29,7 +30,7 @@ public class AuthResource {
         Benutzer benutzer = benutzerService.getBenutzer(credentials.getBenutzername());
         if (benutzer == null) {
             // Kein Benutzer gefunden - später gleiche message wie passwort falsch - wegen sicherheit
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Benutzername oder Passwort ungültig - Benutzername falsch").build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(new StringResponse("Benutzername oder Passwort ungültig - Benutzername falsch")).build();
         }
         if (PasswortVerschluesselung.checkPasswort(credentials.getPasswort(), benutzer.getPasswort())) {
         	// Passwort passt
@@ -39,11 +40,11 @@ public class AuthResource {
 				return Response.ok(new TokenResponse(token)).build();
 			} catch (Exception e) {
 				e.printStackTrace();
-				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Private Key konnte nicht geholt werden").build();
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new StringResponse("Private Key konnte nicht geholt werden")).build();
 			}
         } else {
             // Passwort passt nicht - später gleiche message wie nutzer existiert nicht - wegen sicherheit
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Benutzername oder Passwort ungültig - Passwort falsch").build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity(new StringResponse("Benutzername oder Passwort ungültig - Passwort falsch")).build();
         }
     }
 
@@ -55,9 +56,9 @@ public class AuthResource {
         if (benutzerService.isBenutzernameVerfügbar(neuerBenutzer.getBenutzername())) {
         	neuerBenutzer.setPasswort(PasswortVerschluesselung.hashPasswort(neuerBenutzer.getPasswort()));
             benutzerService.createBenutzer(neuerBenutzer);
-            return Response.status(Response.Status.CREATED).entity("Benutzer wurde erstellt").build();
+            return Response.status(Response.Status.CREATED).entity(new StringResponse("Benutzer wurde erstellt")).build();
         }
-        return Response.status(Response.Status.CONFLICT).entity("Benutzername bereits vergeben").build();
+        return Response.status(Response.Status.CONFLICT).entity(new StringResponse("Benutzername bereits vergeben")).build();
     }
 
     public static class BenutzerCredentials {

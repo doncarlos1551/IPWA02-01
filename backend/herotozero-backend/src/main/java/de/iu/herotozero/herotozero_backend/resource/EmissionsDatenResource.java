@@ -2,6 +2,7 @@ package de.iu.herotozero.herotozero_backend.resource;
 
 import de.iu.herotozero.herotozero_backend.model.EmissionsDaten;
 import de.iu.herotozero.herotozero_backend.service.EmissionsDatenService;
+import de.iu.herotozero.herotozero_backend.util.StringResponse;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -73,7 +74,7 @@ public class EmissionsDatenResource {
     @RolesAllowed("Admin")
     public Response deleteEmissionsDaten(@PathParam("id") Long id) {
         if (emissionsDatenService.deleteEmissionsDaten(id)) {
-            return Response.status(Response.Status.OK).entity("Emissionsdaten wurden gelöscht.").build();
+            return Response.status(Response.Status.OK).entity(new StringResponse("Emissionsdaten wurden gelöscht.")).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }

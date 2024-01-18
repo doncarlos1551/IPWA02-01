@@ -1,6 +1,7 @@
 package de.iu.herotozero.herotozero_backend.resource;
 
 import de.iu.herotozero.herotozero_backend.util.KeyVerwaltung;
+import de.iu.herotozero.herotozero_backend.util.StringResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -26,7 +27,8 @@ public class OeffentlichResource {
             String publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
             return Response.ok(publicKeyString).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new StringResponse("Beim holen vom Public Key ist etwas komplett schief gelaufen.")).build();
         }
     }
 }
