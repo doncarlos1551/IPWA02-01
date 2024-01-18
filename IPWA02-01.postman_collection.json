@@ -472,7 +472,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"landId\": 1,\r\n    \"jahr\": 2022,\r\n    \"co2Emissionen\": 543.21\r\n}\r\n",
+							"raw": "{\r\n    \"landId\": 1,\r\n    \"unternehmen\": \"BeispielUnternehmen\",\r\n    \"jahr\": 2022,\r\n    \"co2Emissionen\": 543.21\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -499,7 +499,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"landId\": 1,\r\n    \"jahr\": 2022,\r\n    \"co2Emissionen\": 543.21,\r\n    \"validiert\": true\r\n}\r\n",
+							"raw": "{\r\n    \"landId\": 1,\r\n    \"unternehmen\": \"BeispielUnternehmen\",\r\n    \"jahr\": 2022,\r\n    \"co2Emissionen\": 543.21,\r\n    \"validiert\": true\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -526,7 +526,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"landId\": 1,\r\n    \"jahr\": 2010,\r\n    \"co2Emissionen\": 6543.21\r\n}\r\n",
+							"raw": "{\r\n    \"landId\": 1,\r\n    \"unternehmen\": \"BeispielUnternehmen\",\r\n    \"jahr\": 2010,\r\n    \"co2Emissionen\": 6543.21\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -553,7 +553,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"landId\": 1,\r\n    \"jahr\": 2010,\r\n    \"co2Emissionen\": 6543.21,\r\n    \"validiert\": true\r\n}\r\n",
+							"raw": "{\r\n    \"landId\": 1,\r\n    \"unternehmen\": \"BeispielUnternehmen\",\r\n    \"jahr\": 2010,\r\n    \"co2Emissionen\": 6543.21,\r\n    \"validiert\": true\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
