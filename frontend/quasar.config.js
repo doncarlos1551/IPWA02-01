@@ -63,7 +63,7 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/herotozero-frontend/',
+      publicPath: '/IPWA02-01/',
       // analyze: true,
       // env: {},
       // rawDefine: {}
