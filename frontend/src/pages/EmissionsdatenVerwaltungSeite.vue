@@ -40,7 +40,7 @@
           color="primary"
           @click="zeigeLandErstellenDialog = true"
         />
-        <q-toggle v-model="editEmissionTabelle" label="Editieren"></q-toggle>
+        <q-toggle v-model="editLandTabelle" label="Editieren"></q-toggle>
         <LandCo2Tabelle
           :emissions-daten="landEmissionsDaten"
           :editMode="editLandTabelle"

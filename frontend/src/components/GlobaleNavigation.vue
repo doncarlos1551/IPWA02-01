@@ -61,7 +61,7 @@
   <q-dialog v-model="zeigeSettingsDialog">
     <q-card style="width: 450px; max-width: 80vw">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Login</div>
+        <div class="text-h6">BaseURL</div>
         <q-space></q-space>
         <q-btn icon="close" flat round dense v-close-popup></q-btn>
       </q-card-section>

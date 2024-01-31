@@ -1,0 +1,183 @@
+@startuml
+
+' Klassen für die Modelle
+class Benutzer {
+    - Long id
+    - String benutzername
+    - String email
+    - String passwort
+    + getRollen() : List<String>
+}
+
+class EmissionsDaten {
+    - Long id
+    - Long landId
+    - String unternehmen
+    - Integer jahr
+    - Double co2Emissionen
+    - Boolean validiert
+}
+
+class Land {
+    - Long id
+    - String name
+    - Double gesamtCo2Emissionen
+}
+
+' Utility-Klassen
+class KeyVerwaltung {
+    + getPrivateKey() : PrivateKey
+    + getPublicKey() : PublicKey
+}
+
+class PasswortVerschluesselung {
+    + hashPasswort(passwortKlartext : String) : String
+    + checkPasswort(passwortKlartext : String, gespeichertesHashPasswort : String) : boolean
+}
+
+class StringResponse {
+    - nachricht : String
+}
+
+' Filter
+class CORSFilter implements Filter {
+    + doFilter(...) : void
+}
+
+' Initialisierungs-Bean
+class InitBean {
+    - BenutzerService benutzerService
+    + init() : void
+}
+
+' JAX-RS Application
+class RestApplication extends Application {
+    + RestApplication() : void
+}
+
+' Repository-Klassen
+class BenutzerRepository {
+    - EntityManager entityManager
+    + findById(Long) : Benutzer
+    + findByBenutzername(String) : Benutzer
+    + findAll() : List<Benutzer>
+    + save(Benutzer) : void
+    + delete(Benutzer) : void
+}
+
+class EmissionsDatenRepository {
+    - EntityManager entityManager
+    + findById(Long) : EmissionsDaten
+    + findAll() : List<EmissionsDaten>
+    + save(EmissionsDaten) : void
+    + delete(EmissionsDaten) : void
+}
+
+class LandRepository {
+    - EntityManager entityManager
+    + findById(Long) : Land
+    + findAll() : List<Land>
+    + save(Land) : void
+    + delete(Land) : void
+    + calculateGesamtEmissionen(Long) : Double
+}
+
+' Service-Klassen
+class BenutzerService {
+    - BenutzerRepository benutzerRepository
+    + getBenutzer(Long) : Benutzer
+    + getAllBenutzer() : List<Benutzer>
+    + createBenutzer(Benutzer) : void
+    + updateBenutzer(Long, Benutzer) : Benutzer
+    + deleteBenutzer(Long) : boolean
+    + isBenutzernameVerfügbar(String) : boolean
+}
+
+class EmissionsDatenService {
+    - EmissionsDatenRepository emissionsDatenRepository
+    - LandService landService
+    + getEmissionsDaten(Long) : EmissionsDaten
+    + getAllEmissionsDaten() : List<EmissionsDaten>
+    + saveEmissionsDaten(EmissionsDaten) : void
+    + updateEmissionsDaten(Long, EmissionsDaten) : EmissionsDaten
+    + deleteEmissionsDaten(Long) : boolean
+    + validateEmissionsDaten(Long) : EmissionsDaten
+}
+
+class LandService {
+    - LandRepository landRepository
+    + getLand(Long) : Land
+    + getAllLaender() : List<Land>
+    + createLand(Land) : void
+    + updateLand(Long, Land) : Land
+    + deleteLand(Long) : boolean
+    + updateGesamtEmissionen(Long) : void
+}
+
+class AuthService {
+    + createToken(Benutzer) : String
+}
+
+' Resource-Klassen
+class AuthResource {
+    - authService : AuthService
+    - benutzerService : BenutzerService
+    + login(credentials : BenutzerCredentials) : Response
+    + register(neuerBenutzer : Benutzer) : Response
+}
+
+class BenutzerResource {
+    - benutzerService : BenutzerService
+    + getAllBenutzer() : Response
+    + getBenutzerById(id : Long) : Response
+    + createBenutzer(benutzer : Benutzer) : Response
+    + updateBenutzer(id : Long, updatedBenutzer : Benutzer) : Response
+    + deleteBenutzer(id : Long) : Response
+}
+
+class EmissionsDatenResource {
+    - emissionsDatenService : EmissionsDatenService
+    + getAllEmissionsDaten() : Response
+    + getEmissionsDatenById(id : Long) : Response
+    + createEmissionsDaten(emissionsDaten : EmissionsDaten) : Response
+    + updateEmissionsDaten(id : Long, updatedEmissionsDaten : EmissionsDaten) : Response
+    + deleteEmissionsDaten(id : Long) : Response
+}
+
+class LandResource {
+    - landService : LandService
+    + getAllLaender() : Response
+    + getLandById(id : Long) : Response
+    + createLand(land : Land) : Response
+    + updateLand(id : Long, updatedLand : Land) : Response
+    + deleteLand(id : Long) : Response
+}
+
+class OeffentlichResource {
+    + getPublicKey() : Response
+}
+
+class TestResource {
+    + getTestNachricht() : String
+    + getSecureTest() : String
+}
+
+' Beziehungen
+AuthResource --> BenutzerService
+AuthResource --> AuthService
+
+BenutzerResource --> BenutzerService
+
+EmissionsDatenResource --> EmissionsDatenService
+
+LandResource --> LandService
+
+OeffentlichResource --> KeyVerwaltung
+
+TestResource --> AuthService
+
+InitBean --> BenutzerService
+
+CORSFilter ..> "filtert Anfragen für" RestApplication
+
+@enduml
