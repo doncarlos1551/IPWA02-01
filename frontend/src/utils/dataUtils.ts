@@ -28,6 +28,7 @@ export function convertEmissionsDatenResponseZuUnternehmenEmission(
     id: emissionsDatenResponse.id,
     unternehmen: emissionsDatenResponse.unternehmen,
     land: tempLand,
+    jahr: emissionsDatenResponse.jahr,
     co2: emissionsDatenResponse.co2Emissionen,
     validiert: emissionsDatenResponse.validiert,
   };
